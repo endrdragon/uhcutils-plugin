@@ -1,0 +1,4 @@
+main: chip.uhc.util.App
+name: UHCUtils
+version: 1.0
+depend: [CommandAPI]
