@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.CommandException;
+import org.bukkit.ChatColor;
 import java.util.LinkedHashMap;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
@@ -42,9 +44,9 @@ public class App extends JavaPlugin {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvregen game_nether -s " + seed);
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
-                    sender.sendMessage("Both dimensions have been regenerated successfully.");
+                    sender.sendMessage(ChatColor.GREEN + "Both dimensions have been regenerated successfully.");
                 } else {
-                    sender.sendMessage("Dimensions game and game_nether must both exist in order to run this command.");
+                    sender.sendMessage(ChatColor.RED + "Dimensions game and game_nether must both exist in order to run this command.");
                 }
             })
             .register();
