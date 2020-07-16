@@ -1,6 +1,0 @@
-{
-    "files.autoGuessEncoding": true,
-    "java.home": "/usr/local/Cellar/openjdk/14.0.1/",
-    "java.jdt.ls.vmargs": "-Dfile.encoding=UTF-8"
-
-}
