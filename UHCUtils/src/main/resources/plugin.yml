@@ -2,3 +2,6 @@ main: chip.uhc.util.App
 name: UHCUtils
 version: 1.0
 depend: [CommandAPI]
+api-version: 1.13
+author: endrdragon
+description: Plugin to add utility commands for UHC that can't be added with a datapack
