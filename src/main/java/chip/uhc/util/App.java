@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 //import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.CommandException;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Score;
 import java.util.LinkedHashMap;
@@ -19,6 +20,8 @@ import dev.jorel.commandapi.CommandPermission;
 public class App extends JavaPlugin {
     @Override
     public void onLoad() {
+        ConsoleCommandSender console = Bukkit.getConsoleSender();
+
         // /dispatch, /cmd: runs a command, used to run any plugin command in /execute and functions
         LinkedHashMap<String, Argument> dispatchArgs = new LinkedHashMap<>();
         dispatchArgs.put("command", new GreedyStringArgument());
@@ -45,10 +48,10 @@ public class App extends JavaPlugin {
                 if (seed.contains(" ")) seed = "\"" + seed + "\"";
                 if (Bukkit.getWorld("game") != null && Bukkit.getWorld("game_nether") != null) {
                     sender.sendMessage("Reloading dimensions...");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvregen game -s " + seed);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvregen game_nether -s " + seed);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mvconfirm");
+                    Bukkit.dispatchCommand(console, "mvregen game -s " + seed);
+                    Bukkit.dispatchCommand(console, "mvconfirm");
+                    Bukkit.dispatchCommand(console, "mvregen game_nether -s " + seed);
+                    Bukkit.dispatchCommand(console, "mvconfirm");
                     sender.sendMessage(ChatColor.GREEN + "Both dimensions have been regenerated successfully.");
                 } else {
                     CommandAPI.fail("Dimensions game and game_nether must both exist in order to run this command.");
@@ -91,7 +94,7 @@ public class App extends JavaPlugin {
                         String itercmd = cmd;
                         itercmd = itercmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(i));
                         itercmd = itercmd.replaceAll("\\\\\\$", "\\$");
-                        Bukkit.dispatchCommand(sender, itercmd);
+                        Bukkit.dispatchCommand(console, itercmd);
                     }
                 } catch (CommandException e) {
                     CommandAPI.fail("An error occurred while running the commands: " + e.getMessage());
@@ -113,7 +116,7 @@ public class App extends JavaPlugin {
                         String itercmd = cmd;
                         itercmd = itercmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(i));
                         itercmd = itercmd.replaceAll("\\\\\\$", "\\$");
-                        Bukkit.dispatchCommand(sender, itercmd);
+                        Bukkit.dispatchCommand(console, itercmd);
                     }
                 } catch (CommandException e) {
                     sender.sendMessage(ChatColor.RED + "An error occurred while running the commands: " + e.getMessage());
@@ -223,7 +226,7 @@ public class App extends JavaPlugin {
                 int v = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(valOb).getScore(valPl).getScore();
                 cmd = cmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(v));
                 cmd = cmd.replaceAll("\\\\\\$", "\\$");
-                Bukkit.dispatchCommand(sender, cmd);
+                Bukkit.dispatchCommand(console, cmd);
             })
             .register();
     }

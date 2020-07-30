@@ -6,6 +6,8 @@ This plugin adds commands via [1.13 Command API](https://github.com/JorelAli/1.1
 
 ## Added Commands
 
+### Generic Command Utilities
+
 * `/dispatch` (alias `/cmd`)
   * Runs a command. Allows for running almost any Spigot command in functions and `/execute`.
   * Syntax
@@ -25,12 +27,15 @@ This plugin adds commands via [1.13 Command API](https://github.com/JorelAli/1.1
     * `/let <var> = <player> <objective> run <cmd>`
   * Examples
     * `/let a = @s health run worldborder set $a`
-* `/regen`
-  * Regenerates both dimensions `game` and `game_nether` using provided seed.
-  * Syntax
-    * `/regen <seed>`
 * `/runfn`
   * Sets player-objective entry to provided value, runs the function, and returns whatever was in that specified entry. Simplifies `/function` with argument syntax and allows for some complicated multi-command functionalities with `/for`.
   * Syntax
     * `/runfn <function> with <player> <objective> as <value>`
     * `/runfn <function> with <player> <objective> as <value player> <value objective>`
+
+### Actual UHC-specific Utilities
+
+* `/regen`
+  * Regenerates both dimensions `game` and `game_nether` using provided seed.
+  * Syntax
+    * `/regen <seed>`
