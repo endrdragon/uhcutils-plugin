@@ -32,7 +32,7 @@ public class App extends JavaPlugin {
             .withAliases("cmd")
             .executes((sender, args) -> {
                 String cmd = (String) args[0];
-                Bukkit.dispatchCommand(sender, cmd);
+                Bukkit.dispatchCommand(console, cmd);
             })
             .register();
 
@@ -164,7 +164,7 @@ public class App extends JavaPlugin {
                 // return score for use w/ execute store
                 try {
                     int retVal = inputScore.getScore();
-                    sender.sendMessage("Function returned " + Integer.toString(retVal));
+                    console.sendMessage("Function returned " + Integer.toString(retVal));
                     return retVal; 
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     CommandAPI.fail("Entry no longer exists");
@@ -195,7 +195,7 @@ public class App extends JavaPlugin {
                 }
                 // return score for use w/ execute store
                 try {
-                    int retVal = inputScore.getScore();
+                    int retVal = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(inputOb).getScore(inputPl).getScore();
                     sender.sendMessage("Function returned " + Integer.toString(retVal));
                     return retVal; 
                 } catch (IllegalArgumentException | IllegalStateException e) {
