@@ -19,6 +19,12 @@ This plugin adds commands via [1.13 Command API](https://github.com/JorelAli/1.1
     * `/for a in 1..9 run say $a` (posts `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`)
     * `/for a in 1..9 run say \$a` (posts `$a` 9x)
     * `/for a in 1..9 step 2 run say $a` (posts `1`, `3`, `5`, `7`, `9`)
+* `/let`
+  * Runs a command with a variable that can be substituted for a scoreboard entry.
+  * Syntax
+    * `/let <var> = <player> <objective> run <cmd>`
+  * Examples
+    * `/let a = @s health run worldborder set $a`
 * `/regen`
   * Regenerates both dimensions `game` and `game_nether` using provided seed.
   * Syntax

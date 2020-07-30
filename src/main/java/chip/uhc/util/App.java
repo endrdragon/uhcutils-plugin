@@ -143,6 +143,34 @@ public class App extends JavaPlugin {
             runfnEntryArgs.put("objective value", new ObjectiveArgument());
 
             new CommandAPICommand("runfunction")
+            .withArguments(runfnArgs)
+            .withPermission(CommandPermission.OP)
+            .withAliases("runfn")
+            .executes((sender, args) -> {
+                FunctionWrapper[] fns = (FunctionWrapper[]) args[0];
+                String inputPl = (String) args[1];
+                String inputOb = (String) args[2];
+                int inputVal = (int) args[3];
+                Score inputScore = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(inputOb).getScore(inputPl);
+                
+                inputScore.setScore(inputVal);
+                // run fns after arg has been set
+                for (FunctionWrapper fn : fns) {
+                    fn.run();
+                }
+                // return score for use w/ execute store
+                try {
+                    int retVal = inputScore.getScore();
+                    sender.sendMessage("Function returned " + Integer.toString(retVal));
+                    return retVal; 
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    CommandAPI.fail("Entry no longer exists");
+                }
+                return 0;
+            })
+            .register();
+
+            new CommandAPICommand("runfunction")
             .withArguments(runfnEntryArgs)
             .withPermission(CommandPermission.OP)
             .withAliases("runfn")
@@ -174,5 +202,29 @@ public class App extends JavaPlugin {
             })
             .register();
         
+            // /let <var> = <player> <objective> in <cmd>: substs var with entry in cmd, same syntax as /for
+            LinkedHashMap<String, Argument> letArgs = new LinkedHashMap<>();
+            letArgs.put("var", new StringArgument());
+            letArgs.put("=", new LiteralArgument("="));
+            letArgs.put("player", new ScoreHolderArgument(ScoreHolderType.SINGLE));
+            letArgs.put("objective", new ObjectiveArgument());
+            letArgs.put("run", new LiteralArgument("run"));
+            letArgs.put("cmd", new GreedyStringArgument());
+
+            new CommandAPICommand("let")
+            .withArguments(letArgs)
+            .withPermission(CommandPermission.OP)
+            .executes((sender, args) -> {
+                String vname = (String) args[0];
+                String valPl = (String) args[1];
+                String valOb = (String) args[2];
+                String cmd = (String) args[3];
+
+                int v = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(valOb).getScore(valPl).getScore();
+                cmd = cmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(v));
+                cmd = cmd.replaceAll("\\\\\\$", "\\$");
+                Bukkit.dispatchCommand(sender, cmd);
+            })
+            .register();
     }
 }
