@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Score;
+import org.bukkit.entity.Player;
 import java.util.LinkedHashMap;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -32,7 +34,7 @@ public class App extends JavaPlugin {
             .withAliases("cmd")
             .executes((sender, args) -> {
                 String cmd = (String) args[0];
-                Bukkit.dispatchCommand(console, cmd);
+                Bukkit.dispatchCommand(sender, cmd);
             })
             .register();
 
@@ -155,7 +157,6 @@ public class App extends JavaPlugin {
                 String inputOb = (String) args[2];
                 int inputVal = (int) args[3];
                 Score inputScore = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(inputOb).getScore(inputPl);
-                
                 inputScore.setScore(inputVal);
                 // run fns after arg has been set
                 for (FunctionWrapper fn : fns) {
@@ -164,7 +165,7 @@ public class App extends JavaPlugin {
                 // return score for use w/ execute store
                 try {
                     int retVal = inputScore.getScore();
-                    console.sendMessage("Function returned " + Integer.toString(retVal));
+                    if (sender instanceof Player && !(sender instanceof ProxiedCommandSender)) sender.sendMessage("Function returned " + Integer.toString(retVal));
                     return retVal; 
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     CommandAPI.fail("Entry no longer exists");
@@ -195,8 +196,8 @@ public class App extends JavaPlugin {
                 }
                 // return score for use w/ execute store
                 try {
-                    int retVal = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(inputOb).getScore(inputPl).getScore();
-                    sender.sendMessage("Function returned " + Integer.toString(retVal));
+                    int retVal = inputScore.getScore();
+                    if (sender instanceof Player && !(sender instanceof ProxiedCommandSender)) sender.sendMessage("Function returned " + Integer.toString(retVal));
                     return retVal; 
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     CommandAPI.fail("Entry no longer exists");
@@ -226,7 +227,7 @@ public class App extends JavaPlugin {
                 int v = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(valOb).getScore(valPl).getScore();
                 cmd = cmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(v));
                 cmd = cmd.replaceAll("\\\\\\$", "\\$");
-                Bukkit.dispatchCommand(console, cmd);
+                Bukkit.dispatchCommand(sender, cmd);
             })
             .register();
     }
