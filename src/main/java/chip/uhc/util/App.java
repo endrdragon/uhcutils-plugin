@@ -8,12 +8,17 @@ import org.bukkit.command.CommandException;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Objective;
 import org.bukkit.entity.Player;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
+import dev.jorel.commandapi.arguments.EntitySelectorArgument.EntitySelector;
 import dev.jorel.commandapi.arguments.ScoreHolderArgument.ScoreHolderType;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.FunctionWrapper;
@@ -228,6 +233,75 @@ public class App extends JavaPlugin {
                 cmd = cmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(v));
                 cmd = cmd.replaceAll("\\\\\\$", "\\$");
                 Bukkit.dispatchCommand(sender, cmd);
+            })
+            .register();
+
+            // /respawn <targets> [destination]: respawns player in UHC, bypassing any forced spectator checks
+            // targeted players will respawn at their death location or specified destination
+            // used for unfair death
+            LinkedHashMap<String, Argument> respawnArgs = new LinkedHashMap<>();
+            respawnArgs.put("targets", new EntitySelectorArgument(EntitySelector.MANY_PLAYERS));
+
+            LinkedHashMap<String, Argument> respawnCoordArgs = new LinkedHashMap<>();
+            respawnCoordArgs.put("targets", new EntitySelectorArgument(EntitySelector.MANY_PLAYERS));
+            respawnCoordArgs.put("destination", new LocationArgument(LocationType.PRECISE_POSITION));
+
+            new CommandAPICommand("respawn")
+            .withArguments(respawnArgs)
+            .withPermission(CommandPermission.OP)
+            .executes((sender, args) -> {
+                int game_started = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("uhc.internal").getScore("game_started").getScore();
+                if (game_started == 1) {
+                    @SuppressWarnings("unchecked")
+                    Collection<Player> targets = (Collection<Player>) args[0];
+
+                    Objective deaths = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("uhc.deaths");
+                    Objective alive = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("uhc.team_alive");
+                    for (Player player : targets) {
+                        // reset scoreboards
+                        String name = player.getName();
+                        deaths.getScore(name).setScore(0);
+                        String teamid = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(name).getName().substring(4);
+                        alive.getScore(teamid).setScore(1);
+                        // respawn player
+                        Location spawn = player.getBedSpawnLocation();
+                        if (spawn == null) spawn = Bukkit.getWorld("game").getSpawnLocation();
+                        player.teleport(spawn);
+                        player.setGameMode(GameMode.SURVIVAL);
+                    }
+
+                } else {
+                    CommandAPI.fail("Game has not started.");
+                }
+            })
+            .register();
+
+            new CommandAPICommand("respawn")
+            .withArguments(respawnCoordArgs)
+            .withPermission(CommandPermission.OP)
+            .executes((sender, args) -> {
+                int game_started = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("uhc.internal").getScore("game_started").getScore();
+                if (game_started == 1) {
+                    @SuppressWarnings("unchecked")
+                    Collection<Player> targets = (Collection<Player>) args[0];
+                    Location spawn = (Location) args[1];
+
+                    Objective deaths = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("uhc.deaths");
+                    Objective alive = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("uhc.team_alive");
+                    for (Player player : targets) {
+                        // reset scoreboards
+                        String name = player.getName();
+                        deaths.getScore(name).setScore(0);
+                        String teamid = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(name).getName().substring(4);
+                        alive.getScore(teamid).setScore(1);
+                        // respawn player
+                        player.teleport(spawn);
+                        player.setGameMode(GameMode.SURVIVAL);
+                    }
+
+                } else {
+                    CommandAPI.fail("Game has not started.");
+                }
             })
             .register();
     }

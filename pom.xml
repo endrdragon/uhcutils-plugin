@@ -6,7 +6,7 @@
 
   <groupId>chip.uhc.util</groupId>
   <artifactId>UHCUtils</artifactId>
-  <version>1.4</version>
+  <version>1.5</version>
 
   <name>UHCUtils</name>
 
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>dev.jorel</groupId>
       <artifactId>commandapi-core</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
     </dependency>
   </dependencies>
 

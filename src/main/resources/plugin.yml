@@ -1,6 +1,6 @@
 main: chip.uhc.util.App
 name: UHCUtils
-version: 1.4
+version: 1.5
 depend: [CommandAPI]
 api-version: 1.16
 author: endrdragon

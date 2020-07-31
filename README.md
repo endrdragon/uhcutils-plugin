@@ -39,3 +39,7 @@ This plugin adds commands via [1.13 Command API](https://github.com/JorelAli/1.1
   * Regenerates both dimensions `game` and `game_nether` using provided seed.
   * Syntax
     * `/regen <seed>`
+* `/respawn`
+  * Respawns a player at their previous death position or at a provided destination.
+  * Syntax
+    * `/respawn <player> [destination]`
