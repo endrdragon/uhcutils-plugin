@@ -211,7 +211,8 @@ public class App extends JavaPlugin {
             })
             .register();
         
-            // /let <var> = <player> <objective> in <cmd>: substs var with entry in cmd, same syntax as /for
+            // /let <var> = <player> <objective> run <cmd>: substs var with entry in cmd, same syntax as /for
+            // /let <var> = <player> <objective> <scale: double> run <cmd>: multiplies by scale
             LinkedHashMap<String, Argument> letArgs = new LinkedHashMap<>();
             letArgs.put("var", new StringArgument());
             letArgs.put("=", new LiteralArgument("="));
@@ -219,6 +220,15 @@ public class App extends JavaPlugin {
             letArgs.put("objective", new ObjectiveArgument());
             letArgs.put("run", new LiteralArgument("run"));
             letArgs.put("cmd", new GreedyStringArgument());
+
+            LinkedHashMap<String, Argument> letScaleArgs = new LinkedHashMap<>();
+            letScaleArgs.put("var", new StringArgument());
+            letScaleArgs.put("=", new LiteralArgument("="));
+            letScaleArgs.put("player", new ScoreHolderArgument(ScoreHolderType.SINGLE));
+            letScaleArgs.put("objective", new ObjectiveArgument());
+            letScaleArgs.put("scale", new DoubleArgument());
+            letScaleArgs.put("run", new LiteralArgument("run"));
+            letScaleArgs.put("cmd", new GreedyStringArgument());
 
             new CommandAPICommand("let")
             .withArguments(letArgs)
@@ -231,6 +241,24 @@ public class App extends JavaPlugin {
 
                 int v = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(valOb).getScore(valPl).getScore();
                 cmd = cmd.replaceAll("(?<!\\\\)\\$" + vname, Integer.toString(v));
+                cmd = cmd.replaceAll("\\\\\\$", "\\$");
+                Bukkit.dispatchCommand(sender, cmd);
+            })
+            .register();
+
+            new CommandAPICommand("let")
+            .withArguments(letScaleArgs)
+            .withPermission(CommandPermission.OP)
+            .executes((sender, args) -> {
+                String vname = (String) args[0];
+                String valPl = (String) args[1];
+                String valOb = (String) args[2];
+                double scale = (Double) args[3];
+                String cmd = (String) args[4];
+
+                int u = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(valOb).getScore(valPl).getScore();
+                double v = (double) u * scale;
+                cmd = cmd.replaceAll("(?<!\\\\)\\$" + vname, Double.toString(v));
                 cmd = cmd.replaceAll("\\\\\\$", "\\$");
                 Bukkit.dispatchCommand(sender, cmd);
             })

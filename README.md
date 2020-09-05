@@ -24,7 +24,7 @@ This plugin adds commands via [1.13 Command API](https://github.com/JorelAli/1.1
 * `/let`
   * Runs a command with a variable that can be substituted for a scoreboard entry.
   * Syntax
-    * `/let <var> = <player> <objective> run <cmd>`
+    * `/let <var> = <player> (scale) <objective> run <cmd>`
   * Examples
     * `/let a = @s health run worldborder set $a`
 * `/runfn`
