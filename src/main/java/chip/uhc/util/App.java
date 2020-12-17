@@ -26,6 +26,7 @@ import dev.jorel.commandapi.CommandPermission;
 public class App extends JavaPlugin {
     @Override
     public void onLoad() {
+        CommandAPI.onLoad(false);
         ConsoleCommandSender console = Bukkit.getConsoleSender();
 
         // /dispatch, /cmd: runs a command, used to run any plugin command in /execute and functions
@@ -331,5 +332,10 @@ public class App extends JavaPlugin {
                 }
             })
             .register();
+    }
+
+    @Override
+    public void onEnable() {
+        CommandAPI.onEnable(this);
     }
 }
