@@ -13,8 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.entity.Player;
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.*;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
@@ -30,8 +29,8 @@ public class App extends JavaPlugin {
         ConsoleCommandSender console = Bukkit.getConsoleSender();
 
         // /dispatch, /cmd: runs a command, used to run any plugin command in /execute and functions
-        LinkedHashMap<String, Argument> dispatchArgs = new LinkedHashMap<>();
-        dispatchArgs.put("command", new GreedyStringArgument());
+        List<Argument> dispatchArgs = new ArrayList<>();
+        dispatchArgs.add(new GreedyStringArgument("command"));
 
         new CommandAPICommand("dispatch")
             .withArguments(dispatchArgs)
@@ -44,8 +43,8 @@ public class App extends JavaPlugin {
             .register();
 
         // /regen <seed>: regens dims game & game_nether with provided seed
-        LinkedHashMap<String, Argument> regenWorldArgs = new LinkedHashMap<>();
-        regenWorldArgs.put("seed", new GreedyStringArgument());
+        List<Argument> regenWorldArgs = new ArrayList<>();
+        regenWorldArgs.add(new GreedyStringArgument("seed"));
 
         new CommandAPICommand("regen")
             .withArguments(regenWorldArgs)
@@ -72,21 +71,21 @@ public class App extends JavaPlugin {
         // examples:
         // /for i in 0..10 run say $i         # (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         // /for i in 0..10 step 2 run say $i  # (0, 2, 4, 6, 8, 10)
-        LinkedHashMap<String, Argument> forArgs = new LinkedHashMap<>();
-        forArgs.put("var", new StringArgument());
-        forArgs.put("in", new LiteralArgument("in"));
-        forArgs.put("range", new IntegerRangeArgument());
-        forArgs.put("run", new LiteralArgument("run"));
-        forArgs.put("cmd", new GreedyStringArgument());
+        List<Argument> forArgs = new ArrayList<>();
+        forArgs.add(new StringArgument("var"));
+        forArgs.add(new LiteralArgument("in"));
+        forArgs.add(new IntegerRangeArgument("range"));
+        forArgs.add(new LiteralArgument("run"));
+        forArgs.add(new GreedyStringArgument("cmd"));
 
-        LinkedHashMap<String, Argument> forStepArgs = new LinkedHashMap<>();
-        forStepArgs.put("var", new StringArgument());
-        forStepArgs.put("in", new LiteralArgument("in"));
-        forStepArgs.put("range", new IntegerRangeArgument());
-        forStepArgs.put("steplit", new LiteralArgument("step"));
-        forStepArgs.put("step", new IntegerArgument(1));
-        forStepArgs.put("run", new LiteralArgument("run"));
-        forStepArgs.put("cmd", new GreedyStringArgument());
+        List<Argument> forStepArgs = new ArrayList<>();
+        forStepArgs.add(new StringArgument("var"));
+        forStepArgs.add(new LiteralArgument("in"));
+        forStepArgs.add(new IntegerRangeArgument("range"));
+        forStepArgs.add(new LiteralArgument("step"));
+        forStepArgs.add(new IntegerArgument("stepamt", 1));
+        forStepArgs.add(new LiteralArgument("run"));
+        forStepArgs.add(new GreedyStringArgument("cmd"));
 
         new CommandAPICommand("for")
             .withArguments(forArgs)
@@ -135,22 +134,22 @@ public class App extends JavaPlugin {
             // this fn sets scoreboard entry to <value> / <player> <objective>, runs the function, and returns the value on said scoreboard entry.
             // this simplifies syntax for functions with args and allows them to be used with /for
             // uhhhh, if you want to use multiple arguments just curry I guess
-            LinkedHashMap<String, Argument> runfnArgs = new LinkedHashMap<>();
-            runfnArgs.put("function", new FunctionArgument());
-            runfnArgs.put("with", new LiteralArgument("with"));
-            runfnArgs.put("player", new ScoreHolderArgument(ScoreHolderType.SINGLE));
-            runfnArgs.put("objective", new ObjectiveArgument());
-            runfnArgs.put("as", new LiteralArgument("as"));
-            runfnArgs.put("value", new IntegerArgument());
+            List<Argument> runfnArgs = new ArrayList<>();
+            runfnArgs.add(new FunctionArgument("function"));
+            runfnArgs.add(new LiteralArgument("with"));
+            runfnArgs.add(new ScoreHolderArgument("player", ScoreHolderType.SINGLE));
+            runfnArgs.add(new ObjectiveArgument("objective"));
+            runfnArgs.add(new LiteralArgument("as"));
+            runfnArgs.add(new IntegerArgument("value"));
 
-            LinkedHashMap<String, Argument> runfnEntryArgs = new LinkedHashMap<>();
-            runfnEntryArgs.put("function", new FunctionArgument());
-            runfnEntryArgs.put("with", new LiteralArgument("with"));
-            runfnEntryArgs.put("player", new ScoreHolderArgument(ScoreHolderType.SINGLE));
-            runfnEntryArgs.put("objective", new ObjectiveArgument());
-            runfnEntryArgs.put("as", new LiteralArgument("as"));
-            runfnEntryArgs.put("player value", new ScoreHolderArgument(ScoreHolderType.SINGLE));
-            runfnEntryArgs.put("objective value", new ObjectiveArgument());
+            List<Argument> runfnEntryArgs = new ArrayList<>();
+            runfnEntryArgs.add(new FunctionArgument("function"));
+            runfnEntryArgs.add(new LiteralArgument("with"));
+            runfnEntryArgs.add(new ScoreHolderArgument("player", ScoreHolderType.SINGLE));
+            runfnEntryArgs.add(new ObjectiveArgument("objective"));
+            runfnEntryArgs.add(new LiteralArgument("as"));
+            runfnEntryArgs.add(new ScoreHolderArgument("player value", ScoreHolderType.SINGLE));
+            runfnEntryArgs.add(new ObjectiveArgument("objective value"));
 
             new CommandAPICommand("runfunction")
             .withArguments(runfnArgs)
@@ -213,22 +212,22 @@ public class App extends JavaPlugin {
         
             // /let <var> = <player> <objective> run <cmd>: substs var with entry in cmd, same syntax as /for
             // /let <var> = <player> <objective> <scale: double> run <cmd>: multiplies by scale
-            LinkedHashMap<String, Argument> letArgs = new LinkedHashMap<>();
-            letArgs.put("var", new StringArgument());
-            letArgs.put("=", new LiteralArgument("="));
-            letArgs.put("player", new ScoreHolderArgument(ScoreHolderType.SINGLE));
-            letArgs.put("objective", new ObjectiveArgument());
-            letArgs.put("run", new LiteralArgument("run"));
-            letArgs.put("cmd", new GreedyStringArgument());
+            List<Argument> letArgs = new ArrayList<>();
+            letArgs.add(new StringArgument("var"));
+            letArgs.add(new LiteralArgument("="));
+            letArgs.add(new ScoreHolderArgument("player", ScoreHolderType.SINGLE));
+            letArgs.add(new ObjectiveArgument("objective"));
+            letArgs.add(new LiteralArgument("run"));
+            letArgs.add(new GreedyStringArgument("cmd"));
 
-            LinkedHashMap<String, Argument> letScaleArgs = new LinkedHashMap<>();
-            letScaleArgs.put("var", new StringArgument());
-            letScaleArgs.put("=", new LiteralArgument("="));
-            letScaleArgs.put("player", new ScoreHolderArgument(ScoreHolderType.SINGLE));
-            letScaleArgs.put("objective", new ObjectiveArgument());
-            letScaleArgs.put("scale", new DoubleArgument());
-            letScaleArgs.put("run", new LiteralArgument("run"));
-            letScaleArgs.put("cmd", new GreedyStringArgument());
+            List<Argument> letScaleArgs = new ArrayList<>();
+            letScaleArgs.add(new StringArgument("var"));
+            letScaleArgs.add(new LiteralArgument("="));
+            letScaleArgs.add(new ScoreHolderArgument("player", ScoreHolderType.SINGLE));
+            letScaleArgs.add(new ObjectiveArgument("objective"));
+            letScaleArgs.add(new DoubleArgument("scale"));
+            letScaleArgs.add(new LiteralArgument("run"));
+            letScaleArgs.add(new GreedyStringArgument("cmd"));
 
             new CommandAPICommand("let")
             .withArguments(letArgs)
@@ -267,12 +266,12 @@ public class App extends JavaPlugin {
             // /respawn <targets> [destination]: respawns player in UHC, bypassing any forced spectator checks
             // targeted players will respawn at their death location or specified destination
             // used for unfair death
-            LinkedHashMap<String, Argument> respawnArgs = new LinkedHashMap<>();
-            respawnArgs.put("targets", new EntitySelectorArgument(EntitySelector.MANY_PLAYERS));
+            List<Argument> respawnArgs = new ArrayList<>();
+            respawnArgs.add(new EntitySelectorArgument("targets", EntitySelector.MANY_PLAYERS));
 
-            LinkedHashMap<String, Argument> respawnCoordArgs = new LinkedHashMap<>();
-            respawnCoordArgs.put("targets", new EntitySelectorArgument(EntitySelector.MANY_PLAYERS));
-            respawnCoordArgs.put("destination", new LocationArgument(LocationType.PRECISE_POSITION));
+            List<Argument> respawnCoordArgs = new ArrayList<>();
+            respawnCoordArgs.add(new EntitySelectorArgument("targets", EntitySelector.MANY_PLAYERS));
+            respawnCoordArgs.add(new LocationArgument("destination", LocationType.PRECISE_POSITION));
 
             new CommandAPICommand("respawn")
             .withArguments(respawnArgs)

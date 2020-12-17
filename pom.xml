@@ -6,7 +6,7 @@
 
   <groupId>chip.uhc.util</groupId>
   <artifactId>UHCUtils</artifactId>
-  <version>1.6</version>
+  <version>1.7</version>
 
   <name>UHCUtils</name>
 
@@ -22,8 +22,8 @@
         <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
       </repository>
       <repository>
-        <id>mccommandapi</id>
-        <url>https://raw.githubusercontent.com/JorelAli/1.13-Command-API/mvn-repo/1.13CommandAPI/</url>
+        <id>commandapi</id>
+        <url>https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/</url>
       </repository>
   </repositories>
 
@@ -42,8 +42,8 @@
     </dependency>
     <dependency>
       <groupId>dev.jorel</groupId>
-      <artifactId>commandapi-core</artifactId>
-      <version>3.4</version>
+      <artifactId>commandapi-shade</artifactId>
+      <version>5.4</version>
     </dependency>
   </dependencies>
 
